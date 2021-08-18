@@ -25,6 +25,7 @@
 #include "USART.h"
 #include "joystick.h"
 #include "RGB.h"
+#include "Watchdog.h"
 
 
 
@@ -95,7 +96,7 @@ static __NO_RETURN void rebotes (void *arg) {
   while (1) {
 		
 		/*Se espera al envío de la señal desde la función de callback de las interrupciones del joystick*/
-		flag = osThreadFlagsWait (0x3FF, osFlagsWaitAny, osWaitForever);
+		flag = osThreadFlagsWait (0x3FF, osFlagsWaitAny, 10);
 
 		
 		/*Se recibe señal de interrupción en el flanco de subida de la pulsación LEFT*/
@@ -285,6 +286,7 @@ static __NO_RETURN void rebotes (void *arg) {
 			/*Se enciende/apaga el LED RGB*/
 			if (encender == 0){
 				encender = 1;
+				modo = 0;
 				encender_LED_verde(inten);
 				/*Se envía mensaje al terminal a traves de la USART indicando que se ennciende el RGB*/
 				size = sprintf(buf,"\r Pulsacion Central: Se enciende el RGB \n");
@@ -300,6 +302,7 @@ static __NO_RETURN void rebotes (void *arg) {
 				tx_USART(buf, size);
 			}
 		}
+		reset_Watchdog();
   }
 }
 
